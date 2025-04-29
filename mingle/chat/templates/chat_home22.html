@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room</title>
+    <link rel="stylesheet" href="{% static 'css/chat_style.css' %}">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="sidebar">
+            <h2>Users</h2>
+            <ul id="user-list">
+                <!-- List of users will be populated here -->
+            </ul>
+        </div>
+        <div class="chat-box">
+            <div id="messages" class="messages">
+                <!-- Chat messages will be displayed here -->
+            </div>
+            <div class="input-area">
+                <textarea id="message-input" rows="3" placeholder="Type your message here..."></textarea>
+                <button id="send-button">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/chat.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="chat-app-container">
+    <div class="chat-app">
+        <!-- Sidebar -->
+        <div class="chat-sidebar">
+            <div class="sidebar-header">
+                <h3>Chats</h3>
+                <button class="btn-new-group" id="newGroupBtn">
+                    <i class="fas fa-users"></i>
+                </button>
+            </div>
+
+            <div class="search-box">
+                <input type="text" placeholder="Search..." id="searchInput">
+                <i class="fas fa-search"></i>
+            </div>
+
+            <div class="chat-tabs">
+                <button class="active" data-tab="private">Private</button>
+                <button data-tab="groups">Groups</button>
+            </div>
+
+            <div class="chat-list" id="privateChats">
+                <!-- Private chats will load here -->
+                <div class="empty-state">
+                    <i class="fas fa-comment-alt"></i>
+                    <p>No private chats yet</p>
+                </div>
+            </div>
+
+            <div class="chat-list hidden" id="groupChats">
+                <!-- Group chats will load here -->
+                <div class="empty-state">
+                    <i class="fas fa-users"></i>
+                    <p>No group chats yet</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="chat-main">
+            <div class="chat-header">
+                <div class="chat-info">
+                    <div class="avatar"></div>
+                    <div class="chat-title">
+                        <h4 id="activeChatTitle"></h4>
+                        <p id="activeChatStatus"></p>
+                    </div>
+                </div>
+                {% if selectedChat.type == 'group' %}
+                <button class="btn-add-members" id="addMembersBtn">
+                    <i class="fas fa-user-plus"></i>
+                </button>
+                {% endif %}
+            </div>
+
+            <div class="chat-messages" id="chatBox">
+                <div class="message-container">
+                    <div class="message-spacer"></div>
+                    <!-- Messages will appear here -->
+                    <div class="empty-chat">
+                        <i class="fas fa-comments"></i>
+                        <p>Select a chat to start messaging</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input">
+                <input type="text" placeholder="Type a message..." id="messageInput">
+                <button id="sendMessageBtn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Group Creation Modal -->
+        <div class="modal" id="groupModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Create New Group</h3>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <form id="groupForm">
+                    <div class="form-group">
+                        <label>Group Name</label>
+                        <input type="text" name="group_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description (Optional)</label>
+                        <textarea name="group_description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Add Members</label>
+                        <div class="member-list" id="memberSelection">
+                            <!-- Members will be loaded here -->
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-create">Create Group</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'js/chat.js' %}"></script>
+<script>
+    // Initialize after load
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Chat initialized');
+        // Your initialization code if needed
+    });
+</script>
+{% endblock %}

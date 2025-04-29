@@ -1,0 +1,150 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mingle | Login or Signup</title>
+  <link rel="stylesheet" href="{% static 'css/login_signup_style.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<!-- Add this script to maintain panel state -->
+{% if signup_form.errors %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('signup_error') || document.querySelector('.sign-up-container .error')) {
+      document.getElementById('container').classList.add("right-panel-active");
+    }
+  });
+</script>
+{% endif %}
+
+<div class="container {% if request.path == '/signup/' or signup_form.errors %}right-panel-active{% endif %}" id="container">
+
+  <!-- Signup Form -->
+  <div class="form-container sign-up-container">
+    <div class="form-box">
+      <form method="POST" action="{% url 'chat:signup' %}">
+        {% csrf_token %}
+        <h1>Create Account</h1>
+
+        <!-- Error messages -->
+        {% if signup_form.errors %}
+          <div class="error-container">
+            {% for field, errors in signup_form.errors.items %}
+              {% for error in errors %}
+                <p class="error">{{ field|title }}: {{ error }}</p>
+              {% endfor %}
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="social-container">
+          <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+          <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+        <span>or use your email for registration</span>
+        <input type="text" name="username" placeholder="Username" required />
+        <input type="email" name="email" placeholder="Email" required />
+        <input type="password" name="password1" placeholder="Password" required />
+        <input type="password" name="password2" placeholder="Confirm Password" required />
+
+        <!-- Signup Errors -->
+        {% if signup_form.errors %}
+          {% for field in signup_form %}
+            {% for error in field.errors %}
+              <p class="error">{{ error }}</p>
+            {% endfor %}
+          {% endfor %}
+          {% for error in signup_form.non_field_errors %}
+            <p class="error">{{ error }}</p>
+          {% endfor %}
+        {% endif %}
+
+        {% for message in messages %}
+          {% if 'signup' in message.tags %}
+            <p class="error">{{ message }}</p>
+          {% endif %}
+        {% endfor %}
+
+        <button type="submit">Sign Up</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Login Form -->
+  <div class="form-container sign-in-container">
+    <div class="form-box">
+      <form method="POST" action="{% url 'chat:login' %}">
+        {% csrf_token %}
+        <h1>Login</h1>
+        <div class="social-container">
+          <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+          <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+        <input type="text" name="username" placeholder="Username" required />
+        <input type="password" name="password" placeholder="Password" required />
+        <a href="{% url 'chat:password_reset' %}">Forgot your password?</a>
+
+        <!-- Login Errors -->
+        {% if login_form.errors %}
+          {% for error in login_form.non_field_errors %}
+            <p class="error">{{ error }}</p>
+          {% endfor %}
+        {% endif %}
+
+        {% for message in messages %}
+          {% if 'login' in message.tags %}
+            <p class="error">{{ message }}</p>
+          {% endif %}
+        {% endfor %}
+
+        <button type="submit">LOGIN</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Overlay Panels -->
+  <div class="overlay-container">
+    <div class="overlay">
+      <div class="overlay-panel overlay-left">
+        <h1>MINGLE.</h1>
+        <p>Been here before? Let's get you back in</p>
+        <button class="ghost" id="signIn">Login</button>
+      </div>
+      <div class="overlay-panel overlay-right">
+        <h1>MINGLE.</h1>
+        <p>New Here? Let's Get Started Then</p>
+        <button class="ghost" id="signUp">Sign Up</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+  const signUpButton = document.getElementById('signUp');
+  const signInButton = document.getElementById('signIn');
+  const container = document.getElementById('container');
+
+  signUpButton.addEventListener('click', () => {
+    container.classList.add("right-panel-active");
+  });
+
+  signInButton.addEventListener('click', () => {
+    container.classList.remove("right-panel-active");
+  });
+
+  // Clear messages after 5 seconds
+  setTimeout(() => {
+    document.querySelectorAll('.error').forEach(el => {
+      el.style.display = 'none';
+    });
+  }, 5000);
+</script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="profile-edit-container">
+    <div class="profile-card">
+        <h2 class="profile-title">Edit Profile</h2>
+
+        <div class="current-avatar">
+            <img src="{% if profile.profile_picture %}{{ profile.profile_picture.url }}?{% now 'U' %}{% else %}{% static 'profile_pics/default.jpg' %}{% endif %}"
+                alt="{% if profile.profile_picture %}Profile picture{% else %}Default profile picture{% endif %}"
+                class="avatar-img"
+                id="avatar-preview"
+                onerror="this.onerror=null; this.src='{% static 'profile_pics/default.jpg' %}'">
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="profile-form">
+            {% csrf_token %}
+
+            <div class="form-grid">
+                <!-- Left Column -->
+                <div class="form-column">
+                    <div class="form-group">
+                        <label for="id_username">Username</label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                            <div class="error-message">{{ form.username.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_email">Email</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="error-message">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_phone_number">Phone Number</label>
+                        {{ form.phone_number }}
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="form-column">
+                    <div class="form-group">
+                        <label for="id_profile_picture">Profile Picture</label>
+                        <div class="file-upload">
+                            {{ form.profile_picture }}
+                            <label for="id_profile_picture" class="file-upload-label">
+                                <i class="fas fa-cloud-upload-alt"></i> Choose File
+                            </label>
+                            <span class="file-name" id="file-name">No file chosen</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_bio">Bio</label>
+                        {{ form.bio }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-save">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+                <a href="{% url 'chat:chat_home' %}" class="btn-cancel">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+
+                <button type="button"
+                        class="btn-delete"
+                        id="deleteAccountBtn"
+                        data-bs-toggle="modal"
+                        data-bs-target="#deleteAccountModal">
+                    <i class="fas fa-trash-alt"></i> Delete Account
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div id="deleteModal" class="custom-modal">
+    <div class="custom-modal-content">
+        <div class="custom-modal-header">
+            <h3>Confirm Account Deletion</h3>
+            <span class="custom-close-modal">&times;</span>
+        </div>
+        <div class="custom-modal-body">
+            <p class="warning-text">This will permanently delete your account and all data. This action cannot be undone.</p>
+            <form method="post" action="{% url 'chat:delete_account' %}" id="deleteAccountForm">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="passwordConfirm">Enter your password to confirm:</label>
+                    <input type="password" id="passwordConfirm" name="password" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel-modal">Cancel</button>
+                    <button type="submit" class="btn-confirm-delete">
+                        <i class="fas fa-trash-alt"></i> Delete Account
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get modal elements
+    const modal = document.getElementById("deleteModal");
+    const btn = document.getElementById("deleteAccountBtn");
+    const span = document.querySelector(".custom-close-modal");
+    const cancelBtn = document.querySelector(".btn-cancel-modal");
+
+    // Open modal
+    btn.onclick = function() {
+        modal.style.display = "block";
+        document.body.style.overflow = "hidden"; // Prevent scrolling
+    }
+
+    // Close modal
+    function closeModal() {
+        modal.style.display = "none";
+        document.body.style.overflow = "auto";
+    }
+
+    span.onclick = closeModal;
+    cancelBtn.onclick = closeModal;
+
+    // Close when clicking outside modal
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+
+    // Form validation
+    document.getElementById('deleteAccountForm').addEventListener('submit', function(e) {
+        const password = document.getElementById('passwordConfirm').value;
+        if (!password) {
+            e.preventDefault();
+            alert('Please enter your password to confirm deletion');
+        } else if (!confirm('Are you absolutely sure? This cannot be undone!')) {
+            e.preventDefault();
+        }
+    });
+});
+</script>
+{% endblock %}
